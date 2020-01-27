@@ -10,6 +10,10 @@ Feel free to fork this repository and open a pull request if you see
 ways that these materials could be improved. You're also welcome to open
 a GitHub issue.
 
+Another good (more advanced) resource for drawing trees is [Alan
+Munn][amunn]'s "[Using Overleaf to make Trees][amunn-overleaf]"
+tutorial.
+
 # Compiling
 
 In order to compile the file `tree-drawing-tutorial.tex`, you
@@ -53,6 +57,8 @@ Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License</a>.
 
 [diogo]: https://www.diogoalmeida.net/
+[amunn]: https://msu.edu/~amunn/
+[amunn-overleaf]: https://msu.edu/~amunn/latex/overleaf-trees-forest.pdf
 [minted]: http://texdoc.net/texmf-dist/doc/latex/minted/minted.pdf
 [biblatex-sp-unified]: https://github.com/semprag/biblatex-sp-unified/
 [changelog]: /CHANGELOG.md
