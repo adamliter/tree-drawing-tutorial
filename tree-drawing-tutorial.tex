@@ -1,0 +1,553 @@
+\documentclass[11pt]{article}
+
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\usepackage{parskip}
+
+\usepackage[inline]{enumitem}
+
+\usepackage{float}
+\usepackage{subcaption}
+
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+
+\usepackage{fontspec}
+\setmainfont[
+  Ligatures={
+    TeX,
+    Common
+  },
+  BoldFont={AGaramond Pro Semibold}]{Adobe Garamond Pro}
+
+\usepackage[missing={master}]{gitinfo2}
+
+\renewcommand{\gitMark}{%
+Branch: \gitBranch\,@\,\gitAbbrevHash{}
+\textbullet{}
+Release:\gitReln{}}
+
+\usepackage{lastpage}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\f@nch@head}{\rlap}{\color{gray}\small\sffamily\rlap}{}{}
+\patchcmd{\f@nch@foot}{\rlap}{\color{gray}\small\sffamily\rlap}{}{}
+\makeatother
+
+\fancypagestyle{frontmatter}{%
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+  \lhead{}
+  \chead{}
+  \rhead{}
+  \lfoot{}
+  \cfoot{\gitMark}
+  \rfoot{\thepage}}
+
+\fancypagestyle{mainmatter}{%
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+  \lhead{}
+  \chead{}
+  \rhead{}
+  \lfoot{}
+  \cfoot{\gitMark}
+  \rfoot{\thepage/\pageref*{LastPage}}}
+
+\usepackage{minted}
+\setminted{frame=single}
+
+\usepackage[american]{babel}
+
+\usepackage{csquotes}
+
+\usepackage[
+  backend=biber,
+  bibstyle=biblatex-sp-unified,
+  citestyle=sp-authoryear-comp,
+  maxcitenames=2,
+  maxbibnames=99]{biblatex}
+
+\DeclareFieldFormat{doi}{%
+  \textsc{doi}:
+  \ifhyperref
+  {\href{http://dx.doi.org/#1}{\nolinkurl{#1}}}
+  {\nolinkurl{#1}}}
+
+\addbibresource{tree-drawing-tutorial.bib}
+
+\usepackage[linguistics]{forest}
+
+\usepackage{xcolor}
+\definecolor{darkred}{HTML}{B22613}
+
+\usepackage{textglos}
+
+\usepackage{gb4e}
+\noautomath
+
+\usepackage[colorlinks]{hyperref}
+\hypersetup{
+  linkcolor=darkred,
+  citecolor=gray,
+  urlcolor=cyan,
+  bookmarksopen=true,
+  bookmarksopenlevel=3,
+  pdfborder={0 0 0}
+}
+
+\newcommand*{\Email}[1]{\href{mailto:#1}{\nolinkurl{#1}}}
+
+\newcommand*{\Package}[1]{\texttt{#1}}
+\newcommand*{\Software}[1]{\texttt{#1}}
+\newcommand*{\Menu}[1]{\texttt{#1}}
+\newcommand*{\File}[1]{\texttt{#1}}
+
+\newcommand*{\Bracket}[1]{\textbf{\textcolor{red}{#1}}}
+
+\newcommand*{\IE}{\textit{i.e.},}
+\newcommand*{\ETC}{\textit{etc.}}
+
+\title{\textsc{ling} 311 -- Tree drawing tutorial%
+  \thanks{%
+    A version of this tutorial was originally written by
+    \href{https://www.diogoalmeida.net/}{Diogo Almeida} in fall 2006.
+    The section on Microsoft Word greatly benefited from the input of
+    the instructor of the course, Dr.\ Tonia Bleam.  This document was
+    substantially revised by Adam Liter, the \textsc{ling} 311 TA for
+    spring 2020.  Any questions or comments about this tutorial can be
+    directed to either the current TA (via email or during office hours)
+    or to Adam Liter (via email).  Also, the \File{.tex} that produced
+    this \File{.pdf} is available at
+    \href{https://github.com/adamliter/tree-drawing-tutorial}{\nolinkurl{https://github.com/adamliter/tree-drawing-tutorial}}.
+    Pull requests, issues, and suggested improvements are welcome.%
+  }}
+
+\author{%
+  \begin{tabular}{cc}
+    \href{https://adamliter.org}{Adam Liter}\\
+    \Email{liter@umd.edu}
+  \end{tabular}}
+
+\date{Last updated: \today}
+
+\begin{document}
+
+\maketitle
+
+\thispagestyle{frontmatter}
+\pagestyle{frontmatter}
+
+\section{Introduction}
+\label{sec:introduction}
+
+This is a short tutorial on how to draw syntax trees on the computer
+using commonly available resources.  We will be reviewing four easy ways
+of producing trees:
+%
+\begin{enumerate}[label={(\roman*)}]
+\item by using \href{https://www.overleaf.com}{\Software{Overleaf}}, a
+  cloud-based \LaTeX\ system, and the package \Package{forest}
+  (\S\ref{sssec:overleaf-and-forest});
+\item by using a freely available JavaScript tool called
+  \href{http://ironcreek.net/syntaxtree/}{\Software{jsSyntaxTree}}
+  (\S\ref{sssec:jssyntaxtree});
+\item by using the simple drawing functions of word processors like
+  \Software{Microsoft Word}
+  (\href{https://www.libreoffice.org/}{\Software{LibreOffice}} provides
+  a free, open-source, cross-platform alternative to \Software{Microsoft
+    Word}) (\S\ref{sssec:word-processors}); and
+\item by using a free, open-source, cross-platform tool called
+  \href{http://www.mapsofspeech.com/treeform/}{\Software{TreeForm}} that
+  uses a What You See Is What You Get (WYSIWYG) interface
+  (\S\ref{sssec:treeform}).
+\end{enumerate}
+%
+Using the first option,
+\href{https://www.overleaf.com}{\Software{Overleaf}}, is \emph{strongly
+  encouraged}.  However, you are of course free to choose whatever
+method you prefer, or even come up with your own, if you feel so
+inclined.
+
+\section{Tree drawing}
+\label{sec:tree-drawing}
+
+Both of the first two options (cf.~\S\ref{sssec:overleaf-and-forest} and
+\S\ref{sssec:jssyntaxtree}) require using bracket notation for trees.
+There are several resources for familiarizing yourself with bracket
+notation.  First, there is \S3.1 of \href{https://msu.edu/~amunn/}{Alan
+  Munn}'s
+\href{https://msu.edu/~amunn/latex/overleaf-trees-forest.pdf}{\Software{Overleaf}
+  tree drawing tutorial}.  Alan's tutorial shows trees that look more
+like the trees we will be drawing by the end of the course as we develop
+our syntactic theory.  I've adapted Alan's example below in
+\S\ref{ssec:bracket-notation} for a tree that you might be more familiar
+with.  Second, you can refer to \S2.3 of chapter~3 of the textbook for
+this course, \textcite{carnie2002,carnie2007,carnie2013}; this starts on
+p.~84 of the second edition and p.~95 of the third edition.  Third, you
+can refer to
+\href{https://umd.instructure.com/courses/1278736/files/55284562}{the
+  video tutorial} put together by Adam Liter for using
+\Software{Overleaf} and \Package{forest}.
+
+\subsection{Bracket notation}
+\label{ssec:bracket-notation}
+
+Consider the tree in (\ref{ex:tree}).
+%
+\begin{exe}
+  \ex{%
+    \begin{forest}
+      [S
+        [NP
+          [Det\\The]
+          [Adj\\happy]
+          [N\\giraffe]
+        ]
+        [VP
+          [V\\saw]
+          [NP
+            [Det\\the]
+            [N\\lion]
+          ]
+        ]
+      ]
+    \end{forest}}
+    \label{ex:tree}
+\end{exe}
+%
+To convert this tree in to bracket notation, we want include a pair of
+opening and closing brackets (`\texttt{[}' and `\texttt{]}') for each
+node in the tree.  Moreover, each pair of brackets gets a label, and the
+label goes with the opening bracket (`\texttt{[}').  It works best to
+draw your tree by hand on a piece of paper; then, when you go to convert
+it into bracket notation, you should start drawing your tree from the
+top, giving each node matching opening and closing brackets and a label.
+In (\ref{ex:tree-bracketed}), I've shown the brackets in red.  Note that
+there are four closing brackets at the end; this is because all nodes
+require opening and closing brackets, so these four brackets correspond
+to closing off the N (\xv{lion}) node, the NP node, the VP node, and the
+S node.  Similarly, there are two closing brackets at the end of the
+subject NP, which correspond to closing off the N (\xv{giraffe}) node
+and the subject NP node.
+%
+\begin{exe}
+  \ex{%
+    \begin{forest}
+      [\Bracket{[$_{\text{S}}$}S
+        [\Bracket{[$_{\text{NP}}$}NP
+          [\Bracket{[$_{\text{Det}}$}Det\\The\Bracket{]}]
+          [\Bracket{[$_{\text{Adj}}$}Adj\\happy\Bracket{]}]
+          [\Bracket{[$_{\text{N}}$}N\\giraffe\Bracket{]]}]
+        ]
+        [\Bracket{[$_{\text{VP}}$}VP
+          [\Bracket{[$_{\text{V}}$}V\\saw\Bracket{]}]
+          [\Bracket{[$_{\text{NP}}$}NP
+            [\Bracket{[$_{\text{Det}}$}Det\\the\Bracket{]}]
+            [\Bracket{[$_{\text{N}}$}N\\lion\Bracket{]]]]}]
+          ]
+        ]
+      ]
+    \end{forest}}
+    \label{ex:tree-bracketed}
+\end{exe}
+%
+I encourage you to refer to
+\href{https://umd.instructure.com/courses/1278736/files/55284562}{the
+  video tutorial} put together by Adam Liter for using
+\Software{Overleaf} and \Package{forest}; this tutorial also covers the
+usage of bracket notation, and it may be easier to follow a video
+demonstration rather than reading the explanation given here.
+
+Finally, note that this bracket notation can be used with both
+\Software{Overleaf} and \Software{jsSyntaxTree}; however, there are some
+slight differences about the bracket notation that only work in one case
+and not the other.  This only applies to more advanced tree drawing,
+though.  Almost everything in this tutorial should work just fine with
+both \Software{Overleaf} and \Software{jsSyntaxTree} (the one exception
+deals with how line breaks are handled; see \S\ref{sssec:jssyntaxtree}).
+
+\subsection{Tree drawing programs}
+\label{ssec:tree-drawing-programs}
+
+\subsubsection{\Software{Overleaf} and \Package{forest}}
+\label{sssec:overleaf-and-forest}
+
+\href{https://www.overleaf.com}{\Software{Overleaf}} is a cloud-based
+\LaTeX\ system; \LaTeX\ is a document preparation system.  Using \LaTeX\
+may look a bit like programming, but you should not be intimidated.  We
+are only going to be writing a very basic \LaTeX\ document, and you do
+not need to install \LaTeX\ on your own computer since we are using
+\Software{Overleaf}.  You only need to create an account on
+\Software{Overleaf}.%
+\footnote{%
+  If you are interested in learning more about \LaTeX, one good resource
+  is this \href{https://bit.ly/latex-workshop}{\LaTeX\ tutorial}.}
+
+You are encouraged to just watch the
+\href{https://umd.instructure.com/courses/1278736/files/55284562}{the
+  video tutorial} put together by Adam Liter for using
+\Software{Overleaf} and \Package{forest}; however, in what follows, I
+summarize the video tutorial.
+
+For each tree that you want to draw, you'll need to create a new project
+on \Software{Overleaf}.  You should start each new project with the
+setup given in Listing~\ref{lst:standalone-forest}.  You can just copy
+and paste this in to your new project; alternatively, there is an
+Overleaf template called ``Linguistics: Syntax tree drawing template
+using forest'', which you can search for and use as the basis of a new
+project.
+
+\begin{listing}[H]
+  \centering
+  \begin{minted}{latex}
+\documentclass[varwidth=true, border=5pt]{standalone}
+
+\usepackage[linguistics]{forest}
+
+\begin{document}
+\begin{forest}
+[S
+]
+\end{forest}
+\end{document}
+  \end{minted}
+  \caption{A template for drawing trees with \Software{Overleaf} and \Software{forest} using the \Package{standalone} document class}
+  \label{lst:standalone-forest}
+\end{listing}
+
+Everything between the \mintinline{latex}|\documentclass{...}|
+declaration and \mintinline{latex}|\begin{document}| is called the
+preamble of the document; this is where you can load packages and
+define commands.  To draw a tree, you only need to load the
+\Package{forest} package and specify the optional
+\Package{linguistics} argument.
+
+The rules for using the \Package{forest} package are straightforward.
+%
+\begin{enumerate}[label={(\roman*)}]
+\item Every tree goes in between a line with
+  \mintinline{latex}|\begin{forest}| and a line with
+  \mintinline{latex}|\end{forest}|.
+\item Every opening bracket needs a matching closing bracket.
+\item In general, whitespace (spaces and line breaks) does not matter
+  inside the \Package{forest} environment, so you can break your
+  bracketed tree across multiple lines; however, \emph{there are two
+    important exceptions}:
+\begin{enumerate*}[label={(\alph*)}]
+\item there can be no blank lines in the \Package{forest} environment;
+  and
+\item the label for a node must appear immediately next to the opening
+  bracket (\IE{} `\mintinline{latex}|[S|' is acceptable but
+  `\mintinline{latex}|[ S|' is not).
+\end{enumerate*}
+\end{enumerate}
+%
+A final document that produces the tree in (\ref{ex:tree}) is given in
+Listing~\ref{lst:full-forest-example}.
+
+\begin{listing}[H]
+  \centering
+  \begin{minted}{latex}
+\documentclass[varwidth=true, border=5pt]{standalone}
+
+\usepackage[linguistics]{forest}
+
+\begin{document}
+\begin{forest}
+[S
+  [NP
+    [Det\\The]
+    [Adj\\happy]
+    [N\\giraffe]
+  ]
+  [VP
+    [V\\saw]
+    [NP
+      [Det\\the]
+      [N\\lion]
+    ]
+  ]
+]
+\end{forest}
+\end{document}
+ 
+  \end{minted}
+  \caption{A complete document that produces the tree in (\ref{ex:tree}) using \Software{Overleaf} and \Package{forest}}
+  \label{lst:full-forest-example}
+\end{listing}
+
+Once you've finished drawing the tree, you can click the ``Download
+PDF'' button in \Software{Overleaf} to download the resulting tree and
+insert it into a document, such as a \Software{Microsoft Word} document,
+if that is how you are writing up your homework.
+
+\subsubsection{\Software{jsSyntaxTree}}
+\label{sssec:jssyntaxtree}
+
+Another tree drawing option that uses bracket notation is called
+\href{http://ironcreek.net/syntaxtree/}{\Software{jsSyntaxTree}}.
+
+If you go to the website, all you need to do is input the tree in
+bracket notation.  You can then right click on the resulting image, save
+it to your computer, and insert it into a document, such as a
+\Software{Microsoft Word} document, if that is how you are writing up
+your homework.
+
+In general, you can use the same bracket notation for
+\Software{jsSyntaxTree} as you would with \Software{Overleaf} and
+\Package{forest}.  One exception is that you cannot use two backslashes
+(\mintinline{latex}|\\|) for a line break with \Software{jsSyntaxTree};
+instead, you just enter the word that is at the leaf of the tree after
+the label and one space.  You can draw the tree in (\ref{ex:tree}) using
+\Software{jsSyntaxTree} by pasting the bracket notation in
+Listing~\ref{lst:jssyntaxtree-bracketing} into the website.
+
+\begin{listing}[H]
+  \centering
+  \begin{Verbatim}[frame=single]
+[S
+  [NP
+    [Det The]
+    [Adj happy]
+    [N giraffe]
+  ]
+  [VP
+    [V saw]
+    [NP
+      [Det the]
+      [N lion]
+    ]
+  ]
+]
+  \end{Verbatim}
+  \caption{Bracket notation for producing the tree in (\ref{ex:tree}) using \Software{jsSyntaxTree}}
+  \label{lst:jssyntaxtree-bracketing}
+\end{listing}
+
+\subsubsection{Word processors}
+\label{sssec:word-processors}
+
+Drawing trees in a word processor involves two simple stages:
+\begin{enumerate*}[label={(\alph*)}]
+\item typing the structure of the tree; and
+\item connecting the nodes you typed using the line drawing function.
+\end{enumerate*}
+We are going to go through these below.
+
+The first thing you need to do is type the structure of the tree
+(cf.~Figure~\ref{fig:word-processor-1}).  You can use tabs to space the
+nodes out, and you will probably need to skip at least one line every
+time you finish with a structure level. (Notice in
+Figure~\ref{fig:word-processor-1} that there are actually three blank
+lines between the subject NP node and the Det, Adj, and N nodes inside
+that NP; this is because of needing to leave space for the VP
+structure.)
+%
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{word-processor-1}
+  \caption{Typing the structure of the tree}
+  \label{fig:word-processor-1}
+\end{figure}
+%
+Next, you will need to start inserting lines.  You can do this by going
+to the \Menu{Insert} tab (or menu item).  From there, you can select the
+\Menu{Shapes} dropdown menu and choose the simple \Menu{Line} shape
+(cf.~Figure~\ref{fig:word-processor-2}).
+%
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{word-processor-2}
+  \caption{Inserting a line}
+  \label{fig:word-processor-2}
+\end{figure}
+%
+Now you are ready to connect the nodes.  Just draw lines between them
+(cf.~Figure~\ref{fig:word-processor-3}).  Sometimes you will need to
+make minor adjustments either on the position of the nodes or on the
+position of the lines so the tree will look ok.
+%
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{word-processor-3}
+  \caption{Drawing the lines}
+  \label{fig:word-processor-3}
+\end{figure}
+%
+The final result should look something like in
+Figure~\ref{fig:word-processor-4}.
+%
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{word-processor-4}
+  \caption{Final tree from using a word processor}
+  \label{fig:word-processor-4}
+\end{figure}
+
+The biggest downside to using a word processor to draw your trees is
+that you'll need to make sure that the tree stays together as you add
+writing above and below the tree; you'll also need to make sure that the
+tree does not get separated across multiple pages of the document.  The
+best way to do this is to select all but the last line of your tree,
+right click, select \Menu{Paragraph}, then click on the \Menu{Line and
+  Page Break} tab, and select the \Menu{Keep with next} option
+(cf.~Figure~\ref{fig:word-processor-5-and-6}).  This should keep your
+tree together.
+%
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{word-processor-5}
+    \caption{Highlight and select \Menu{Paragraph}}
+    \label{subfig:word-processor-5}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{word-processor-6}
+    \caption{Select \Menu{Keep with next}}
+    \label{subfig:word-processor-6}
+  \end{subfigure}
+  \caption{Keeping a tree together when drawn with a word processor}
+  \label{fig:word-processor-5-and-6}
+\end{figure}
+
+\subsubsection{\Software{TreeForm}}
+\label{sssec:treeform}
+
+Finally, the last option is to use
+\href{http://www.mapsofspeech.com/treeform/}{\Software{TreeForm}}.
+\Software{TreeForm} uses a WYSIWYG approach to drawing trees.  As such
+it is fairly intuitive, and we will not cover it in detail here.  There
+is a video tutorial at the linked website that you can watch.
+
+In brief, you will need to download the program, install it, draw your
+tree using the interface, and then export it as an image which you can
+insert into a document, such as a \Software{Microsoft Word} document, if
+that is how you are writing up your homework.
+
+Note that \Software{TreeForm} is somewhat of an outdated Java
+application.  As of July 2019, the author of the software has begun to
+try to update and modernize it.  However, because of it being somewhat
+outdated, you are discouraged from using this option.  It is unlikely
+that the TA will be able to help you all that much with this option if
+you get stuck.
+
+\printbibliography
+
+\end{document}
+
+% Local Variables:
+% coding: utf-8
+% mode: latex
+% TeX-engine: luatex
+% TeX-master: t
+% LaTeX-biblatex-use-Biber: t
+% TeX-command-extra-options: "-shell-escape"
+% End:
