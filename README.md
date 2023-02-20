@@ -57,8 +57,8 @@ Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License</a>.
 
 [diogo]: https://www.diogoalmeida.net/
-[amunn]: https://msu.edu/~amunn/
-[amunn-overleaf]: https://msu.edu/~amunn/latex/overleaf-trees-forest.pdf
+[amunn]: https://amunn.github.io/
+[amunn-overleaf]: https://amunn.github.io/assets/latex/overleaf-trees.pdf
 [minted]: http://texdoc.net/texmf-dist/doc/latex/minted/minted.pdf
 [biblatex-sp-unified]: https://github.com/semprag/biblatex-sp-unified/
 [changelog]: /CHANGELOG.md
